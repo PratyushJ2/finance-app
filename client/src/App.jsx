@@ -1,24 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import AccountDetails from './pages/AccountDetails';
 
 function App() {
-  const [accounts, setAccounts] = useState([]);
-
-  useEffect(() => {
-    fetch('/accounts')
-      .then(res => res.json())
-      .then(data => setAccounts(data))
-      .catch(console.error);
-  }, []);
-
   return (
-    <div>
-      <h1>Accounts</h1>
-      <ul>
-        {accounts.map(account => (
-          <li key={account.id}>{account.name}</li>
-        ))}
-      </ul>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/account/:id" element={<AccountDetails />} />
+      </Routes>
+    </Router>
   );
 }
 
