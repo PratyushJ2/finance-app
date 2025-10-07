@@ -24,6 +24,8 @@ function Home() {
                 {account.name} 
                 </button>
             ))}
+            <br />
+            <button type="button" onClick={() => navigate('add-transaction')}>Add Transaction</button>
         </div>
     );
 

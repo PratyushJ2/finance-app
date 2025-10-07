@@ -17,18 +17,60 @@ app.post('/accounts', async (req, res) => {
     res.json(account);
 });
 
-// Add a transaction
-app.post('/ledger', async (req, res) => {
-    const {accountId, amount, entryType, description} = req.body;
-    const ledger = await prisma.ledgerEntry.create({
-        data: { accountId, amount, entryType, description}
-    });
-    res.json(ledger);
+app.post('/transactions', async(req, res) => {
+    const {userID, description, entries} = req.body;
+
+    try {
+        const totalDebits = entries
+        .filter(event => event.entryType == 'Debit')
+        .reduce((sum, event) => sum + parseFloat(event.amount), 0);
+
+        const totalCredits = entries
+        .filter(event => event.entryType == 'Credit')
+        .reduce((sum, event) => sum + parseFloat(event.amount), 0);
+
+        if(totalDebits != totalCredits) {
+            return res.status(400).json({error: 'Transaction is not balanced'});
+        }
+
+        const transaction = await prisma.transaction.create({
+            data: {
+                userID,
+                description,
+                entries: {
+                    create: entries.map(entry => ({
+                        accountId: entry.accountId,
+                        amount: entry.amount,
+                        entryType: entry.entryType,
+                        description: entry.description
+                    }))
+                }
+            },
+            include: {
+                entries: true
+            }
+        });
+
+        res.status(201).json(transaction);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error: 'Internal service error'});
+    }
+
 });
 
 app.get('/accounts', async (req, res) => {
     const accountId = req.params.id;
     const entries = await prisma.account.findMany();
+    res.json( entries );
+});
+
+app.get('/transactions', async (req, res) => {
+    const entries = await prisma.transaction.findMany({
+        include: {
+            entries: true
+        }
+    });
     res.json( entries );
 });
 

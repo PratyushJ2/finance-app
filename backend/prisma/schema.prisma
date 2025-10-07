@@ -21,12 +21,30 @@ model Account {
   createdAt DateTime @default(now())
 }
 
-model LedgerEntry {
+model Transaction {
   id          String @id @default(uuid())
-  accountId   String
-  account     Account @relation(fields: [accountId], references: [id])
-  amount      Decimal
-  entryType   String
-  description String
+  userID      String
+  description String?
+  entries     LedgerEntry[]
   createdAt   DateTime @default(now())
+}
+
+enum EntryType {
+  Debit
+  Credit
+}
+
+model LedgerEntry {
+  id            String       @id @default(uuid())
+  transactionId String
+  transaction   Transaction  @relation(fields: [transactionId], references: [id])
+  accountId     String
+  account       Account      @relation(fields: [accountId], references: [id])
+  amount        Decimal
+  entryType     EntryType
+  description   String?
+  createdAt     DateTime     @default(now())
+
+  @@index([accountId])
+  @@index([transactionId])
 }

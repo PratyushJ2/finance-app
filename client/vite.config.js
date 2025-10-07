@@ -5,7 +5,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/accounts': 'http://localhost:3000'
+      '/accounts': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
+      },
+      '/transactions': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
+      }
     }
   }
 });
