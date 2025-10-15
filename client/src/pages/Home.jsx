@@ -1,31 +1,64 @@
-import React, {useState, useEffect} from 'react';
+import React, {createContext, useContext, useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 
-function Home() {
-    const [accounts, setAccounts] = useState([]);
-    const navigate = useNavigate();
+const AuthContext = createContext();
 
-    useEffect(() => {
-        fetch('/accounts')
-          .then(res => res.json())
-          .then(data => setAccounts(data))
-          .catch(console.error);
-    }, []);
+function Home() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [accessToken, setAccessToken] = useAuth();
 
     const handleNavigate = (id) => {
         navigate(`account/${id}`)
     }
 
+    const handleUser = async(event) => {
+        event.preventDefault();
+        try {
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'email': email,
+                    'password': password
+                })
+            });
+
+            const data = await res.json();
+            console.log('Server response', data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+
     return (
         <div>
-            <h1>Accounts</h1>
-            { accounts.map(account => (
-                <button key={account.id} onClick={() => handleNavigate(account.id)}> 
-                {account.name} 
-                </button>
-            ))}
-            <br />
-            <button type="button" onClick={() => navigate('add-transaction')}>Add Transaction</button>
+            <H1>Login</H1>
+            <form onSubmit={handleUser}>
+                <label>
+                    Email
+                    <input
+                        placeholder='Enter your email'
+                        value={email}
+                        onChange={event => setEmail(event.target.value)}
+                        required
+                    />
+                </label>
+
+                <label>
+                    Password
+                    <input
+                        placeholder='Enter your password'
+                        value={password}
+                        onChange={event => setPassword(event.target.value)}
+                        required
+                    />
+                </label>
+                <button type="submit">Submit</button>
+            </form>
         </div>
     );
 

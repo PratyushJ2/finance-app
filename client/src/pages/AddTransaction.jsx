@@ -40,7 +40,6 @@ function AddTransaction() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    'userID': 'pjoshi',
                     'description': description,
                     'entries': entries
                 })
