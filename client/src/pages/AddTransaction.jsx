@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import {useAuth} from '../Context/AuthContext';
 
 const defaultEntry = {
     accountId: '',
@@ -11,13 +12,19 @@ function AddTransaction() {
     const [description, setDescription] = useState('');
     const [entries, setEntries] = useState([{...defaultEntry}, {...defaultEntry}])
     const [accounts, setAccounts] = useState([]);
+    const {accessToken} = useAuth();
 
     useEffect(() => {
-        fetch('/accounts')
+        fetch('/accounts', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        })
           .then(res => res.json())
           .then(data => setAccounts(data))
           .catch(console.error);
-    }, []);
+    }, [accessToken]);
 
     const handleEntryChange = (index, field, value) => {
         const update = [...entries];
@@ -37,6 +44,7 @@ function AddTransaction() {
             const res = await fetch('/transactions', {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({

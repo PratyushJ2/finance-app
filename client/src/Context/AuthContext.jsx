@@ -6,7 +6,7 @@ export const AuthProvider = ({children}) => {
     const [accessToken, setAccessToken] = useState(null);
 
     return (
-        <AuthContext.Provider value={{ accessTotken, setAccessToken}}>
+        <AuthContext.Provider value={{ accessToken, setAccessToken }}>
             {children}
         </AuthContext.Provider>
     );

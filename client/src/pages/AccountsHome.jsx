@@ -1,19 +1,26 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useAuth} from '../Context/AuthContext';
 
 function AccountsHome() {
     const [accounts, setAccounts] = useState([]);
+    const {accessToken} = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('/accounts')
+        fetch('/accounts', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        })
           .then(res => res.json())
           .then(data => setAccounts(data))
           .catch(console.error);
-    }, []);
+    }, [accessToken]);
 
     const handleNavigate = (id) => {
-        navigate(`account/${id}`)
+        navigate(`/account/${id}`)
     }
 
     return (
@@ -25,7 +32,7 @@ function AccountsHome() {
                 </button>
             ))}
             <br />
-            <button type="button" onClick={() => navigate('add-transaction')}>Add Transaction</button>
+            <button type="button" onClick={() => navigate('/add-transaction')}>Add Transaction</button>
         </div>
     );
 

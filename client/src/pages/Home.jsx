@@ -1,16 +1,12 @@
-import React, {createContext, useContext, useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-
-const AuthContext = createContext();
+import {useAuth} from '../Context/AuthContext';
 
 function Home() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [accessToken, setAccessToken] = useAuth();
-
-    const handleNavigate = (id) => {
-        navigate(`account/${id}`)
-    }
+    const {accessToken, setAccessToken} = useAuth();
+    const navigate = useNavigate();
 
     const handleUser = async(event) => {
         event.preventDefault();
@@ -20,14 +16,17 @@ function Home() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    'email': email,
-                    'password': password
-                })
+                body: JSON.stringify({ email, password })
             });
 
+            if(!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Login failed');
+            }
+
             const data = await res.json();
-            console.log('Server response', data);
+            setAccessToken(data.accessToken);
+            navigate('/accounts');
         } catch (error) {
             console.error('Error:', error);
         }
@@ -36,10 +35,11 @@ function Home() {
 
     return (
         <div>
-            <H1>Login</H1>
+            <h1>Login</h1>
             <form onSubmit={handleUser}>
                 <label>
                     Email
+                    <br/>
                     <input
                         placeholder='Enter your email'
                         value={email}
@@ -47,10 +47,13 @@ function Home() {
                         required
                     />
                 </label>
+                <br />
 
                 <label>
                     Password
+                    <br/>
                     <input
+                        type='password'
                         placeholder='Enter your password'
                         value={password}
                         onChange={event => setPassword(event.target.value)}
