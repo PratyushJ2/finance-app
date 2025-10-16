@@ -7,9 +7,11 @@ const prisma = new PrismaClient();
 
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 require('dotenv').config();
 
@@ -50,7 +52,7 @@ app.post('/login', async (req, res) => {
 
     const valid = await argon2.verify(user.password, password);
     if(!valid) {
-        return res.status(401).json({ error: 'Invalid Credientials' });
+        return res.status(401).json({ error: 'Invalid Credentials' });
     }
 
     const tokens = generateTokens(user);
@@ -82,6 +84,28 @@ function authenticateToken(req, res, next) {
         next();
     });
 }
+
+// Refresh token
+app.post('/refresh-token', (req, res) => {
+    const token = req.cookies.refreshToken;
+    if(!token) {
+        return res.status(401).json({ error: 'No refresh token' });
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if(err) {
+            return res.status(403).json({ error: 'Invalid refresh token' });
+        }
+
+        const accessToken = jwt.sign({ userId: user.userId }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
+        res.json({ accessToken });
+    });
+});
+
+app.post('/logout', (req, res) => {
+    res.clearCookie('refreshToken');
+    res.status(200).json({ message: 'Logged out' });
+});
 
 // Create an account
 app.post('/accounts', authenticateToken, async (req, res) => {

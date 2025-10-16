@@ -4,7 +4,7 @@ import {useAuth} from '../Context/AuthContext';
 
 function AccountsHome() {
     const [accounts, setAccounts] = useState([]);
-    const {accessToken} = useAuth();
+    const {accessToken, logout} = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,6 +23,11 @@ function AccountsHome() {
         navigate(`/account/${id}`)
     }
 
+    const handleLogout = async () => {
+        await logout();
+        navigate('/');
+    }
+
     return (
         <div>
             <h1>Accounts</h1>
@@ -33,6 +38,8 @@ function AccountsHome() {
             ))}
             <br />
             <button type="button" onClick={() => navigate('/add-transaction')}>Add Transaction</button>
+            <br />
+            <button type="button" onClick={handleLogout}>Logout</button>
         </div>
     );
 
