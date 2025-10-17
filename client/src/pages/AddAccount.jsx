@@ -1,11 +1,9 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {useAuth} from '../Context/AuthContext';
 
 function AddAccount() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const {accessToken, setAccessToken} = useAuth();
     const navigate = useNavigate();
 
     const handleUser = async(event) => {
@@ -25,7 +23,6 @@ function AddAccount() {
             }
 
             const data = await res.json();
-            setAccessToken(data.accessToken);
             navigate('/');
         } catch (error) {
             console.error('Error:', error);
