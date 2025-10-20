@@ -1,23 +1,32 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAuth} from '../Context/AuthContext';
+import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 
 function AccountsHome() {
     const [accounts, setAccounts] = useState([]);
-    const {accessToken, logout} = useAuth();
+    const {logout} = useAuth();
     const navigate = useNavigate();
+    const fetchAuth = useAuthenticatedFetch();
 
     useEffect(() => {
-        fetch('/accounts', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
+        const fetchAccounts = async () => {
+            try {
+                const res = await fetchAuth('/accounts');
+
+                if (!res.ok) {
+                    throw new Error('Failed to fetch accounts');
+                }
+
+                const data = await res.json();
+                setAccounts(data);
+            } catch (error) {
+                console.error('Error fetching accounts:', error);
             }
-        })
-          .then(res => res.json())
-          .then(data => setAccounts(data))
-          .catch(console.error);
-    }, [accessToken]);
+        };
+
+        fetchAccounts();
+   }, [fetchAuth]);
 
     const handleNavigate = (id) => {
         navigate(`/account/${id}`)

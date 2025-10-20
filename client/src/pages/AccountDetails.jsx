@@ -1,23 +1,28 @@
 import React, {useState, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
-import {useAuth} from '../Context/AuthContext';
+import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 
 function AccountDetails() {
     const [balance, setBalance] = useState(0);
     const {id} = useParams();
-    const {accessToken} = useAuth();
-
+    const fetchAuth = useAuthenticatedFetch
+    
     useEffect(() => {
-        fetch(`/accounts/${id}/balance`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
+        const fetchBalance = async () => {
+            try {
+                const res = await fetchAuth(`/accounts/${id}/balance`);
+                if (!res.ok) {
+                    throw new Error('Failed to fetch balance');
+                }
+                const data = await res.json();
+                setBalance(data);
+            } catch (error) {
+                console.error('Error fetching balance:', error);
             }
-        })
-          .then(res => res.json())
-          .then(data => setBalance(data))
-          .catch(console.error)
-    }, [accessToken]);
+        };
+
+        fetchBalance();
+  }, [fetchAuth, id]);
 
     return (
         <>

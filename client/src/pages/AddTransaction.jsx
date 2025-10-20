@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {useAuth} from '../Context/AuthContext';
+import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 
 const defaultEntry = {
     accountId: '',
@@ -13,18 +14,22 @@ function AddTransaction() {
     const [entries, setEntries] = useState([{...defaultEntry}, {...defaultEntry}])
     const [accounts, setAccounts] = useState([]);
     const {accessToken} = useAuth();
+    const fetchAuth = useAuthenticatedFetch();
 
     useEffect(() => {
-        fetch('/accounts', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
+        const fetchAccounts = async () => {
+            try {
+                const res = await fetchAuth('/accounts');
+                if (!res.ok) throw new Error('Failed to load accounts');
+                const data = await res.json();
+                setAccounts(data);
+            } catch (err) {
+                console.error(err);
             }
-        })
-          .then(res => res.json())
-          .then(data => setAccounts(data))
-          .catch(console.error);
-    }, [accessToken]);
+        };
+
+        fetchAccounts();
+    }, [fetchAuth]);
 
     const handleEntryChange = (index, field, value) => {
         const update = [...entries];
@@ -38,27 +43,26 @@ function AddTransaction() {
         setEntries(entries.filter((__, i) => i !== index));
     }
 
-    const handleTransaction = async(event) => {
+    const handleTransaction = async (event) => {
         event.preventDefault();
         try {
-            const res = await fetch('/transactions', {
+            const res = await fetchAuth('/transactions', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    'description': description,
-                    'entries': entries
+                    description,
+                    entries
                 })
             });
 
             const data = await res.json();
-            console.log('Server response', data);
+            console.log('Server response:', data);
         } catch (error) {
             console.error('Error:', error);
         }
-    }
+    };
 
     return (
         <>
