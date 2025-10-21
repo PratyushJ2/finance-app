@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import {useAuth} from '../Context/AuthContext';
 import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 
 const defaultEntry = {
@@ -13,7 +12,6 @@ function AddTransaction() {
     const [description, setDescription] = useState('');
     const [entries, setEntries] = useState([{...defaultEntry}, {...defaultEntry}])
     const [accounts, setAccounts] = useState([]);
-    const {accessToken} = useAuth();
     const fetchAuth = useAuthenticatedFetch();
 
     useEffect(() => {

@@ -2,7 +2,7 @@ export const refreshAccessToken = async () => {
     try {
         const res = await fetch('/refresh-token', {
             method: 'POST',
-            credientials: 'include'
+            credentials: 'include'
         });
 
         if(!res.ok) {

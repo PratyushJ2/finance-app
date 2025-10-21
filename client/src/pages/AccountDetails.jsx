@@ -5,7 +5,7 @@ import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 function AccountDetails() {
     const [balance, setBalance] = useState(0);
     const {id} = useParams();
-    const fetchAuth = useAuthenticatedFetch
+    const fetchAuth = useAuthenticatedFetch();
     
     useEffect(() => {
         const fetchBalance = async () => {
