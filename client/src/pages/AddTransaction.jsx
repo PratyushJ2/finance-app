@@ -27,7 +27,7 @@ function AddTransaction() {
         };
 
         fetchAccounts();
-    }, [fetchAuth]);
+    }, []);
 
     const handleEntryChange = (index, field, value) => {
         const update = [...entries];

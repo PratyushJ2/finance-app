@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 export const useAuthenticatedFetch = () => {
     const { accessToken, setAccessToken, logout } = useAuth();
 
-    const authenticatedFetch = useCallback(async (url, options = {}) => {
+    const authenticatedFetch = async (url, options = {}) => {
         let token = accessToken;
 
         const doFetch = async () => {
@@ -39,7 +39,7 @@ export const useAuthenticatedFetch = () => {
         };
 
         return doFetch();
-    }, [accessToken, setAccessToken, logout]);
+    }
 
     return authenticatedFetch;
 };

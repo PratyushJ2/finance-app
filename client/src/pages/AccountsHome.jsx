@@ -26,7 +26,7 @@ function AccountsHome() {
         };
 
         fetchAccounts();
-   }, [fetchAuth]);
+   }, []);
 
     const handleNavigate = (id) => {
         navigate(`/account/${id}`)
