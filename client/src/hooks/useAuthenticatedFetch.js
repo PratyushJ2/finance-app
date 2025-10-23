@@ -1,6 +1,5 @@
 import { useAuth } from '../Context/AuthContext';
 import { refreshAccessToken } from '../utils/refreshAccessToken';
-import { useCallback } from 'react';
 
 export const useAuthenticatedFetch = () => {
     const { accessToken, setAccessToken, logout } = useAuth();

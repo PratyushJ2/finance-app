@@ -48,6 +48,8 @@ function AccountsHome() {
             <br />
             <button type="button" onClick={() => navigate('/add-transaction')}>Add Transaction</button>
             <br />
+            <button type="button" onClick={() => navigate('/add-account')}>Add New Account</button>
+            <br />
             <button type="button" onClick={handleLogout}>Logout</button>
         </div>
     );

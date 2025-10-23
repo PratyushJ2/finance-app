@@ -5,6 +5,7 @@ import AccountDetails from './pages/AccountDetails';
 import AddTransaction from './pages/AddTransaction';
 import AccountsHome from './pages/AccountsHome';
 import { AuthProvider } from './Context/AuthContext';
+import AddUser from './pages/AddUser';
 import AddAccount from './pages/AddAccount';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/add-transaction" element={<AddTransaction />} />
           <Route path="/account/:id" element={<AccountDetails />} />
           <Route path="/accounts" element={<AccountsHome />} />
+          <Route path="/add-user" element={<AddUser />} />
           <Route path="/add-account" element={<AddAccount />} />
         </Routes>
       </Router>

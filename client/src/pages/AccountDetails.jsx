@@ -22,7 +22,7 @@ function AccountDetails() {
         };
 
         fetchBalance();
-  }, [fetchAuth, id]);
+  }, [id]);
 
     return (
         <>

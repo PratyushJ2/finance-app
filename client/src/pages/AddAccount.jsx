@@ -1,65 +1,46 @@
-import React, {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 
 function AddAccount() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+    const [account, setAccount] = useState('');
+    const fetchAuth = useAuthenticatedFetch();
 
-    const handleUser = async(event) => {
+    const handleAccount = async (event) => {
         event.preventDefault();
         try {
-            const res = await fetch('/users', {
+            const res = await fetchAuth('/accounts', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ name: account })
             });
 
-            if(!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.error || 'Account was not created');
-            }
-
             const data = await res.json();
-            navigate('/');
+            console.log('Server response:', data);
         } catch (error) {
             console.error('Error:', error);
         }
-    }
-
+    };
+    
 
     return (
-        <div>
-            <h1>Create New Account</h1>
-            <form onSubmit={handleUser}>
-                <label>
-                    Email
-                    <br/>
-                    <input
-                        placeholder='Enter your email'
-                        value={email}
-                        onChange={event => setEmail(event.target.value)}
+        <>
+            <div>
+                <h1>Create New Account</h1>
+                <form onSubmit={handleAccount}>
+                    <input 
+                        placeholder="Account Name" 
+                        value={account}
+                        onChange={event => setAccount(event.target.value)}
                         required
                     />
-                </label>
-                <br />
-
-                <label>
-                    Password
-                    <br/>
-                    <input
-                        type='password'
-                        placeholder='Enter your password'
-                        value={password}
-                        onChange={event => setPassword(event.target.value)}
-                        required
-                    />
-                </label>
-                <button type="submit">Submit</button>
-            </form>
-        </div>
+                    <br />
+                    <button type="submit">Submit</button>
+                </form>
+                
+            </div>
+        </>
     );
 
 }

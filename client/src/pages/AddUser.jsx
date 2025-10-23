@@ -1,17 +1,15 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {useAuth} from '../Context/AuthContext';
 
-function Home() {
+function AddUser() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const {accessToken, setAccessToken} = useAuth();
     const navigate = useNavigate();
 
     const handleUser = async(event) => {
         event.preventDefault();
         try {
-            const res = await fetch('/login', {
+            const res = await fetch('/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -21,12 +19,11 @@ function Home() {
 
             if(!res.ok) {
                 const errorData = await res.json();
-                throw new Error(errorData.error || 'Login failed');
+                throw new Error(errorData.error || 'Account was not created');
             }
 
             const data = await res.json();
-            setAccessToken(data.accessToken);
-            navigate('/accounts');
+            navigate('/');
         } catch (error) {
             console.error('Error:', error);
         }
@@ -35,7 +32,7 @@ function Home() {
 
     return (
         <div>
-            <h1>Login</h1>
+            <h1>Create New Account</h1>
             <form onSubmit={handleUser}>
                 <label>
                     Email
@@ -62,10 +59,9 @@ function Home() {
                 </label>
                 <button type="submit">Submit</button>
             </form>
-            <button onClick={() => navigate('/add-user')}>Create New Account</button>
         </div>
     );
 
 }
 
-export default Home;
+export default AddUser;
