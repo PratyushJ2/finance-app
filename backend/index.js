@@ -112,12 +112,28 @@ app.post('/logout', (req, res) => {
 
 // Create an account
 app.post('/accounts', authenticateToken, async (req, res) => {
-    const userId = req.user.userId
-    const {name} = req.body;
-    const account = await prisma.account.create({
-        data: { name, userId }
-    });
-    res.json(account);
+    try {
+        const userId = req.user.userId
+        const {name} = req.body;
+        const existingAccount = await prisma.account.findFirst({
+            where: {
+                name,
+                userId
+            }
+        });
+        
+        if(existingAccount) {
+            return res.status(400).json({ error: 'Account already exists.' });
+        }
+
+        const account = await prisma.account.create({
+            data: { name, userId }
+        });
+        res.json(account);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal service error'} );
+    }
 });
 
 app.post('/transactions', authenticateToken, async(req, res) => {
